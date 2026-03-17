@@ -106,7 +106,7 @@ app.delete('/api/orders', async (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`\n☕ Elqahwa Iftar server running at http://localhost:${PORT}`);
-  console.log(`📋 Admin panel at http://localhost:${PORT}/admin.html\n`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n☕ Elqahwa Iftar server running at http://0.0.0.0:${PORT}`);
+  console.log(`📋 Admin panel at http://0.0.0.0:${PORT}/admin.html\n`);
 });
