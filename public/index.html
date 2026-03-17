@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elqahwa Iftar — Place Your Order</title>
+  <meta name="description" content="Order your iftar meal from Elqahwa. Quick, easy, and delicious!">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+</head>
+<body>
+  <!-- Background Effects -->
+  <div class="bg-pattern"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <span class="logo-icon">☕</span>
+      <h1>Elqahwa Iftar</h1>
+      <p class="subtitle">Place Your Order</p>
+    </header>
+
+    <!-- Order Card -->
+    <div class="order-card">
+      <!-- Form -->
+      <div id="orderForm">
+        <div class="card-title">📝 New Order</div>
+        
+        <form id="iftarForm" autocomplete="off">
+          <div class="form-group">
+            <label for="customerName">Your Name</label>
+            <input 
+              type="text" 
+              id="customerName" 
+              name="name"
+              placeholder="Enter your name..."
+              required
+              maxlength="100"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="customerOrder">Your Order</label>
+            <textarea 
+              id="customerOrder" 
+              name="order"
+              placeholder="What would you like to order?&#10;e.g. 2x Foul, 1x Falafel, 1x Tea..."
+              required
+              maxlength="500"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span class="btn-text">Submit Order ✨</span>
+            <span class="btn-loading">Sending... ⏳</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Success Message -->
+      <div class="success-message" id="successMessage">
+        <span class="success-icon">🎉</span>
+        <h3>Order Received!</h3>
+        <p>Your iftar order has been saved successfully.</p>
+        <button class="btn-new-order" id="newOrderBtn">Place Another Order</button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>
+        <a href="admin.html">📊 View Orders</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

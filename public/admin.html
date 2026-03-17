@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elqahwa Iftar — Admin Panel</title>
+  <meta name="description" content="Admin panel to view and manage Elqahwa Iftar orders">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+</head>
+<body>
+  <div class="bg-pattern"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+
+  <div class="container admin">
+    <!-- Header -->
+    <a href="index.html" class="back-link">← Back to Orders</a>
+
+    <header class="header">
+      <span class="logo-icon">📊</span>
+      <h1>Elqahwa Iftar</h1>
+      <p class="subtitle">Admin Panel</p>
+    </header>
+
+    <!-- Admin Card -->
+    <div class="order-card">
+      <div class="admin-header">
+        <div class="card-title" style="margin-bottom:0">🗂️ All Orders <span class="order-count" id="orderCount">0 orders</span></div>
+        <div class="admin-actions">
+          <button class="btn-action" id="refreshBtn" onclick="loadOrders()">🔄 Refresh</button>
+          <button class="btn-action" id="downloadBtn" onclick="downloadExcel()">📥 Download Excel</button>
+          <button class="btn-action danger" id="clearBtn" onclick="clearOrders()">🗑️ Clear All</button>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      <div id="ordersContent">
+        <div class="empty-state" id="emptyState">
+          <span class="empty-icon">📭</span>
+          <p>No orders yet. They'll appear here once submitted.</p>
+        </div>
+
+        <div class="orders-table-wrapper" id="tableWrapper" style="display:none">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Order</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer" style="margin-top:24px">
+      <p><a href="index.html">☕ Order Page</a></p>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const password = prompt("Please enter the admin password:");
+    if (password !== "pop1234") {
+      document.body.innerHTML = `
+        <div class="container admin" style="text-align: center; margin-top: 100px;">
+          <h1>🔒 Access Denied</h1>
+          <p>You entered an incorrect password.</p>
+          <a href="index.html" class="btn" style="display:inline-block; margin-top:20px;">Return to Home</a>
+        </div>
+      `;
+      throw new Error("Access Denied");
+    }
+
+    const ordersBody = document.getElementById('ordersBody');
+    const orderCount = document.getElementById('orderCount');
+    const emptyState = document.getElementById('emptyState');
+    const tableWrapper = document.getElementById('tableWrapper');
+    const toast = document.getElementById('toast');
+    let toastTimeout;
+
+    function showToast(message, isError = false) {
+      toast.textContent = message;
+      toast.className = 'toast show' + (isError ? ' error' : '');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    async function loadOrders() {
+      try {
+        const res = await fetch('/api/orders');
+        const data = await res.json();
+
+        orderCount.textContent = `${data.total} order${data.total !== 1 ? 's' : ''}`;
+
+        if (data.orders.length === 0) {
+          emptyState.style.display = 'block';
+          tableWrapper.style.display = 'none';
+          return;
+        }
+
+        emptyState.style.display = 'none';
+        tableWrapper.style.display = 'block';
+
+        ordersBody.innerHTML = data.orders.map(o => `
+          <tr>
+            <td>${o.id}</td>
+            <td>${escapeHtml(o.name)}</td>
+            <td>${escapeHtml(o.order)}</td>
+            <td>${o.date || '—'}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        showToast('Failed to load orders', true);
+        console.error(err);
+      }
+    }
+
+    function downloadExcel() {
+      window.location.href = '/api/orders/download';
+    }
+
+    async function clearOrders() {
+      if (!confirm('Are you sure you want to delete ALL orders? This cannot be undone.')) return;
+      try {
+        const res = await fetch('/api/orders', { method: 'DELETE' });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('All orders cleared');
+          loadOrders();
+        } else {
+          showToast(data.error || 'Failed to clear', true);
+        }
+      } catch (err) {
+        showToast('Connection error', true);
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const d = document.createElement('div');
+      d.textContent = text;
+      return d.innerHTML;
+    }
+
+    // Load on page ready
+    loadOrders();
+  </script>
+</body>
+</html>
